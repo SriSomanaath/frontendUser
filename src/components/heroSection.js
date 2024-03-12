@@ -1,27 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const HeroSection = () => {
+  const [params, setParams] = useState("");
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:3000/api/employees");
-        console.log("mrMajnu", response);
-        if (!response.ok) {
-          const errorMessage = `Failed to fetch data: ${response.status} - ${response.statusText}`;
-          throw new Error(errorMessage);
-        }
-        const data = await response.json();
-        console.log("mrMajnu", data);
+        const response = await axios.get("http://localhost:3000/api/employees");
+        setParams(response.data);
+        console.log("mrMajnu", response.data, params);
       } catch (error) {
         console.error("Fetch error:", error);
       }
     }
-
     fetchData();
-
-    return () => {
-    };
+    return () => {};
   }, []);
+
+  console.log("params in render:", params["akangksha@bigvisionai.org"]);
 
   return (
     <div>
@@ -31,64 +28,62 @@ const HeroSection = () => {
             <thead>
               <tr>
                 <th className="px-6 py-3 border-b-2 border-gray-300 text-left leading-4 text-blue-500 tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
-                  Fullname
-                </th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
                   Email
                 </th>
                 <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
-                  Phone
+                  FirstName
                 </th>
                 <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
-                  Status
+                  ID
                 </th>
                 <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
-                  Created At
+                  LastName
+                </th>
+                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
+                  Role
+                </th>
+                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
+                  MinTimeInHours
+                </th>
+                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
+                  MaxTimeInHours
+                </th>
+                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm leading-4 text-blue-500 tracking-wider">
+                  SlackEmail
                 </th>
                 <th className="px-6 py-3 border-b-2 border-gray-300"></th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              <tr>
-                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                  <div className="flex items-center">
-                    <div>
-                      <div className="text-sm leading-5 text-gray-800">#1</div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500">
-                  <div className="text-sm leading-5 text-blue-900">
-                    Damilare Anjorin
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
-                  damilareanjorin1@gmail.com
-                </td>
-                <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
-                  +2348106420637
-                </td>
-                <td className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5">
-                  <span className="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                    <span
-                      aria-hidden
-                      className="absolute inset-0 bg-green-200 opacity-50 rounded-full"
-                    ></span>
-                    <span className="relative text-xs">active</span>
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-blue-900 text-sm leading-5">
-                  September 12
-                </td>
-                <td className="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-500 text-sm leading-5">
-                  <button className="px-5 py-2 border-blue-500 border text-blue-500 rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:outline-none">
-                    View Details
-                  </button>
-                </td>
-              </tr>
+              {Object.keys(params).map((email) => (
+                <tr key={email}>
+                  <td>{email}</td>
+                  {Object.keys(params[email]).map((param) => (
+                    <React.Fragment key={param}>
+                      {param === "MinTimeInHours" ||
+                      param === "MaxTimeInHours" ? (
+                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-500 text-sm leading-5">
+                          <input
+                            type="text"
+                            value={params[email][param]}
+                            onChange={(e) => {
+                              // Handle input change here
+                            }}
+                            className="border-blue-900"
+                          />
+                        </td>
+                      ) : (
+                        <td
+                          key={param}
+                          className="px-6 py-4 whitespace-no-wrap border-b text-blue-900 border-gray-500 text-sm leading-5"
+                        >
+                          {params[email][param]}
+                        </td>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
           <div className="sm:flex-1 sm:flex sm:items-center sm:justify-between mt-4 work-sans">
